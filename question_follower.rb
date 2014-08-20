@@ -1,9 +1,7 @@
-# TA question: using (table name).* on joins?
-
-require_relative "user"
 class QuestionFollower
   
   include QueryHelperModule
+  
   attr_accessor :id, :user_id, :question_id
   
   def initialize(options={})
@@ -11,18 +9,7 @@ class QuestionFollower
     @user_id = options['user_id']
     @question_id = options['question_id']
   end
-  
-  def self.find_by_id(id)
-    results = QuestionsDatabase.instance.execute(<<-SQL, id)
-      SELECT
-        *
-      FROM
-        question_followers
-      WHERE
-        id = ?
-    SQL
-    results.map { |result| self.new(result) }.first
-  end
+
   
   def self.followers_for_question_id(questionid)
     results = QuestionsDatabase.instance.execute(<<-SQL, questionid) 

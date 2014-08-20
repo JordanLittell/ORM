@@ -1,7 +1,6 @@
-require_relative 'user'
-require_relative 'question'
-
 class Reply
+  
+  include QueryHelperModule
   
   attr_accessor :id, :body, :question_id, :parent_id, :author_id
   
@@ -13,40 +12,12 @@ class Reply
     @author_id = options['author_id']
   end
   
-  def self.find_by_id(id)
-    results = QuestionsDatabase.instance.execute(<<-SQL, id)
-      SELECT
-        *
-      FROM
-        replies
-      WHERE
-        id = ?
-    SQL
-    results.map { |result| self.new(result) }.first
-  end
-  
   def self.find_by_user_id(author_id)
-    results = QuestionsDatabase.instance.execute(<<-SQL, author_id)
-      SELECT
-        *
-      FROM
-        replies
-      WHERE
-        author_id = ?
-    SQL
-    results.map { |result| Reply.new(result) }
+    self.find_by_column('author_id', author_id)
   end
   
   def self.find_by_question_id(question_id)
-    results = QuestionsDatabase.instance.execute(<<-SQL, question_id)
-      SELECT
-        *
-      FROM
-        replies
-      WHERE
-        question_id = ?
-    SQL
-    results.map { |result| Reply.new(result) }
+    self.find_by_column('question_id', question_id)
   end
   
   def author
@@ -57,19 +28,11 @@ class Reply
     Question.find_by_id(question_id)
   end
   
-  def parent_reply # will this throw an error on NULL?
+  def parent_reply 
     Reply.find_by_id(parent_id)
   end
   
   def child_replies
-    results = QuestionsDatabase.instance.execute(<<-SQL, id)
-      SELECT
-        *
-      FROM
-        replies
-      WHERE
-        parent_id = ?
-    SQL
-    results.map { |result| Reply.new(result) }
+    self.find_by_column('parent_id', id )
   end
 end

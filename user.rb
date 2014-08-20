@@ -1,10 +1,3 @@
-# TA question: dependency management?
-
-require_relative 'question'
-require_relative 'reply'
-require_relative 'question_follower'
-require_relative 'query_helper_module'
-
 class User
   
   include QueryHelperModule
@@ -15,18 +8,6 @@ class User
     @id = options['id']
     @fname = options['fname']
     @lname = options['lname']
-  end
-    
-  def self.find_by_id(id)
-    results = QuestionsDatabase.instance.execute(<<-SQL, id)
-      SELECT
-        *
-      FROM
-        users
-      WHERE
-        id = ?
-    SQL
-    results.map { |result| self.new(result) }.first
   end
   
   def self.find_by_name(fname, lname)

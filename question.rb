@@ -1,10 +1,9 @@
-require_relative "user"
-require_relative "reply"
-
 class Question
   
-  attr_accessor :id, :title, :body, :author_id
   include QueryHelperModule
+  
+  attr_accessor :id, :title, :body, :author_id
+  
   def initialize(options={})
     @id = options['id']
     @title = options['title']
@@ -12,28 +11,8 @@ class Question
     @author_id = options['author_id']
   end
   
-  def self.find_by_id(id)
-    results = QuestionsDatabase.instance.execute(<<-SQL, id)
-      SELECT
-        *
-      FROM
-        questions
-      WHERE
-        id = ?
-    SQL
-    results.map { |result| self.new(result) }.first
-  end
-  
   def self.find_by_author_id(author_id)
-    results = QuestionsDatabase.instance.execute(<<-SQL, author_id)
-      SELECT
-        *
-      FROM
-        questions
-      WHERE
-        author_id = ?
-    SQL
-    results.map { |result| self.new(result) }
+    self.find_by_column('author_id',author_id)
   end
   
   def author
@@ -63,5 +42,4 @@ class Question
   def self.most_liked(n)
     QuestionLike.most_liked_questions(n)
   end
-
 end
